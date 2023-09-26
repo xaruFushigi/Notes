@@ -1,7 +1,5 @@
 const express = require("express");
 const router = express.Router();
-// enviromental variables
-require("dotenv").config({ path: "../.env" });
 // database: Users table
 const { db } = require("../database/models"); // database
 const Folder = db.Folder;
@@ -26,7 +24,7 @@ router.post("/", async (req, res) => {
   }
 });
 // delete folder
-router.delete("/deleteFolder/:id", async (req, res) => {
+router.delete("/deleteFolder/:folderId", async (req, res) => {
   try {
     const DeleteFolder = await Folder.destroy({
       where: { id: req.params.folderId },
@@ -39,14 +37,14 @@ router.delete("/deleteFolder/:id", async (req, res) => {
     throw error;
   }
 });
-//edit folder
+// edit folder
 router.put("/editFolder/:id", async (req, res) => {
   try {
     const EditFolder = await Folder.update(
       {
         folder_name: req.body.newFolderName,
       },
-      { where: { id: req.params.folderId } },
+      { where: { id: req.params.id } },
     );
 
     if (!EditFolder) {
@@ -59,8 +57,8 @@ router.put("/editFolder/:id", async (req, res) => {
     throw error;
   }
 });
-//get folder
-router.get("/getFolder", async (req, res) => {
+// get folders
+router.get("/getFolders", async (req, res) => {
   try {
     const GetFolder = await Folder.findAll();
     if (!GetFolder || GetFolder.length === 0) {
@@ -72,3 +70,5 @@ router.get("/getFolder", async (req, res) => {
     throw error;
   }
 });
+
+module.exports = router;

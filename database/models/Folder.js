@@ -1,4 +1,5 @@
 require("dotenv").config({ path: "../.env" });
+const Notes = require("./Folder");
 
 module.exports = (sequelize, DataTypes) => {
   const Folder = sequelize.define(
@@ -7,34 +8,29 @@ module.exports = (sequelize, DataTypes) => {
       folder_name: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
+      },
+      created_at: {
+        type: DataTypes.DATEONLY,
+        allowNull: true,
+        defaultValue: DataTypes.NOW,
+      },
+      updated_at: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW,
       },
     },
     {
       schema: process.env.DATABASE_SCHEMA,
-      timestamps: true,
-      createdAt: "created_at", // Rename createdAt column
-      updatedAt: "updated_at", // Rename updatedAt column
-      hooks: {
-        beforeValidate: (instance, options) => {
-          instance.setDataValue(
-            "created_at",
-            new Date().toLocaleDateString("jp-JP"),
-          );
-          instance.setDataValue(
-            "updated_at",
-            new Date().toLocaleDateString("jp-JP"),
-          );
-        },
-        beforeUpdate: (instance, options) => {
-          instance.setDataValue(
-            "updated_at",
-            new Date().toLocaleDateString("jp-JP"),
-          );
-        },
-      },
+      timestamps: false,
     },
   );
+
+  Folder.associate = (models) => {
+    Folder.belongsTo(models.Folder, {
+      onDelete: "CASCADE",
+    });
+  };
 
   return Folder;
 };
