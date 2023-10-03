@@ -11,6 +11,7 @@ router.post("/:folderId/createNote", async (req, res) => {
       note_title: req.body.noteTitle,
       note_content: req.body.noteContent,
       FolderId: req.params.folderId,
+      status: req.body.status || "incomplete",
     });
 
     if (!CreateNote) {
@@ -63,12 +64,29 @@ router.get("/getNotes/:folderId", async (req, res) => {
   try {
     const GetNotes = await Notes.findAll({
       where: { FolderId: req.params.folderId },
+      attributes: { exclude: ["created_at", "note_content", "status"] },
     });
     if (!GetNotes || GetNotes.length === 0) {
       return res.status(404).json({ message: "No folders found" });
     }
 
-    return res.status(200).json({ folders: GetNotes });
+    return res.status(200).json({ notes: GetNotes });
+  } catch (error) {
+    throw error;
+  }
+});
+// get individual note
+router.get("/getNote/:noteId", async (req, res) => {
+  try {
+    const GetNote = await Notes.findOne({
+      where: { id: req.params.noteId },
+      attributes: { exclude: ["created_at"] },
+    });
+    if (!GetNote || GetNote.length === 0) {
+      return res.status(404).json({ message: "No folders found" });
+    }
+
+    return res.status(200).json({ noteSingle: GetNote });
   } catch (error) {
     throw error;
   }
